@@ -1,20 +1,9 @@
-// server.js
-
 const express = require('express');
 const multer = require('multer');
 const cloudinary = require('cloudinary').v2;
 const cors = require('cors');
-
-// Cho phép tất cả tên miền (hoặc chính xác github.io) gọi API
-app.use(cors({
-  origin: '*', 
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
-
 const fs = require('fs');
 const { initializeApp } = require('firebase/app');
-
 const { 
   getFirestore, 
   collection, 
@@ -30,8 +19,15 @@ const {
   serverTimestamp 
 } = require('firebase/firestore');
 
+// KHỞI TẠO APP EXPRESS TRƯỚC
 const app = express();
-app.use(cors());
+
+// CẤU HÌNH CORS VÀ MIDDLEWARE
+app.use(cors({
+  origin: '*', 
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
 
 // 1. Firebase Config
@@ -57,6 +53,11 @@ cloudinary.config({
 
 // 3. Multer config
 const upload = multer({ dest: 'uploads/' });
+
+// ROUTE TRANG CHỦ
+app.get('/', (req, res) => {
+  res.send('Server EnRoy đang hoạt động tốt!');
+});
 
 // API 1: LẤY TẤT CẢ BÀI HÁT
 app.get('/api/get-music', async (req, res) => {
@@ -268,10 +269,6 @@ app.put('/api/update-playlist-songs/:id', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
-
-app.get('/', (req, res) => {
-  res.send('Server EnRoy đang hoạt động tốt!');
-});
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
