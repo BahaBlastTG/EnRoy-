@@ -1,8 +1,9 @@
 // js/upload.js
 
-const API_BASE_URL = 'https://enroy-backend.onrender.com';
+// 1. Cập nhật đúng URL Backend Render
+const API_BASE_URL = 'https://enroy.onrender.com';
 
-// 1. Kiểm tra đăng nhập
+// Kiểm tra đăng nhập
 const currentUser = JSON.parse(localStorage.getItem('currentUser'));
 if (!currentUser) {
   alert("Bạn cần đăng nhập để thực hiện chức năng tải nhạc!");
@@ -78,7 +79,10 @@ if (uploadForm) {
         body: formData
       });
 
-      if (!response.ok) throw new Error("Tải nhạc thất bại!");
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Tải nhạc thất bại!");
+      }
 
       alert("Tải lên bài hát thành công!");
       window.location.href = "index.html";
