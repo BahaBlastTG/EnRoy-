@@ -4,6 +4,14 @@ const express = require('express');
 const multer = require('multer');
 const cloudinary = require('cloudinary').v2;
 const cors = require('cors');
+
+// Cho phép tất cả tên miền (hoặc chính xác github.io) gọi API
+app.use(cors({
+  origin: '*', 
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 const fs = require('fs');
 const { initializeApp } = require('firebase/app');
 
