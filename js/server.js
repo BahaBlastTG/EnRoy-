@@ -260,6 +260,11 @@ app.put('/api/update-playlist-songs/:id', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
+
+app.get('/', (req, res) => {
+  res.send('Server EnRoy đang hoạt động tốt!');
+});
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
