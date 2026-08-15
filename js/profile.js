@@ -186,9 +186,9 @@ function prevSong() {
   playSongInQueue((currentSongIndex - 1 + currentQueue.length) % currentQueue.length);
 }
 
-// 6. XỬ LÝ SỰ KIỆN CLICK
+// 6. XỬ LÝ SỰ KIỆN CLICK (ĐÃ SỬA LỖI)
 document.addEventListener('click', async (e) => {
-  // Xóa bài hát đã đăng
+  // 1. Xóa bài hát đã đăng
   const deleteBtn = e.target.closest('.song__delete-btn');
   if (deleteBtn) {
     e.stopPropagation();
@@ -212,14 +212,46 @@ document.addEventListener('click', async (e) => {
     return;
   }
 
-  // Bấm vào bài hát để phát
+  // 2. Toggle hiển thị playlist (Cho lên trước để tránh đụng với click bài hát)
+  const playlistHeader = e.target.closest('.playlist-card-header');
+  if (playlistHeader) {
+    const parentCard = playlistHeader.closest('.playlist-card-item');
+    const songListContainer = parentCard.querySelector('.playlist-songs-list');
+    const arrowIcon = playlistHeader.querySelector('.playlist-arrow-icon');
+    
+    const isHidden = songListContainer.style.display === 'none' || !songListContainer.style.display;
+    songListContainer.style.display = isHidden ? 'block' : 'none';
+    if (arrowIcon) {
+      arrowIcon.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
+    }
+    return;
+  }
+
+  // 3. Bấm vào bài hát để phát (Sửa lỗi ép kiểu & phân biệt nguồn phát)
   const songItem = e.target.closest('.song__item');
   if (songItem && !e.target.closest('button')) {
     const songId = songItem.getAttribute('data-id');
-    currentQueue = [...profileSongs];
-    const index = currentQueue.findIndex(s => s.id === songId);
-    if (index !== -1) playSongInQueue(index);
+    const dataSource = songItem.getAttribute('data-source');
+
+    if (dataSource === 'uploaded') {
+      // Phát từ danh sách nhạc đã đăng
+      currentQueue = [...profileSongs];
+    } else if (dataSource && dataSource.startsWith('playlist-')) {
+      // Phát từ Playlist cụ thể
+      const playlistId = dataSource.replace('playlist-', '');
+      const playlist = profilePlaylists.find(pl => String(pl.id) === String(playlistId));
+      if (playlist && playlist.songIds) {
+        currentQueue = profileSongs.filter(s => playlist.songIds.includes(s.id));
+      }
+    }
+
+    // So sánh bằng String() để tránh lỗi khác kiểu dữ liệu (String vs Number)
+    const index = currentQueue.findIndex(s => String(s.id) === String(songId));
+    if (index !== -1) {
+      playSongInQueue(index);
+    }
   }
+});
 
   // Toggle hiển thị playlist
   const playlistHeader = e.target.closest('.playlist-card-header');
