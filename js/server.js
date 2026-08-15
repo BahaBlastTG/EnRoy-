@@ -1,3 +1,5 @@
+// server.js
+
 const express = require('express');
 const multer = require('multer');
 const cloudinary = require('cloudinary').v2;
@@ -5,7 +7,6 @@ const cors = require('cors');
 const fs = require('fs');
 const { initializeApp } = require('firebase/app');
 
-// BỔ SUNG CÁC HÀM CÒN THIẾU TỪ FIREBASE (where, doc, getDoc, deleteDoc)
 const { 
   getFirestore, 
   collection, 
@@ -14,6 +15,7 @@ const {
   getDoc,
   doc,
   deleteDoc,
+  updateDoc,
   query, 
   where, 
   orderBy, 
@@ -48,9 +50,7 @@ cloudinary.config({
 // 3. Multer config
 const upload = multer({ dest: 'uploads/' });
 
-// ==========================================
-// API 1: LẤY TẤT CẢ BÀI HÁT (Thêm mới để sửa lỗi 404)
-// ==========================================
+// API 1: LẤY TẤT CẢ BÀI HÁT
 app.get('/api/get-music', async (req, res) => {
   try {
     const q = query(collection(db, "songs"), orderBy("createdAt", "desc"));
@@ -68,9 +68,7 @@ app.get('/api/get-music', async (req, res) => {
   }
 });
 
-// ==========================================
-// API 2: TẠO PLAYLIST (Kèm bài hát & Public status)
-// ==========================================
+// API 2: TẠO PLAYLIST
 app.post('/api/create-playlist', async (req, res) => {
   try {
     const { name, username, songIds, isPublic } = req.body;
@@ -93,9 +91,7 @@ app.post('/api/create-playlist', async (req, res) => {
   }
 });
 
-// ==========================================
-// API 3: LẤY PLAYLIST CỦA USER DÀNH CHO TRANG CHỦ
-// ==========================================
+// API 3: LẤY PLAYLIST CỦA USER
 app.get('/api/get-user-playlists/:username', async (req, res) => {
   try {
     const { username } = req.params;
@@ -114,20 +110,16 @@ app.get('/api/get-user-playlists/:username', async (req, res) => {
   }
 });
 
-// ==========================================
 // API 4: LẤY DỮ LIỆU DÀNH CHO TRANG PROFILE
-// ==========================================
 app.get('/api/user-profile-data/:username', async (req, res) => {
   try {
     const { username } = req.params;
 
-    // 1. Lấy bài hát do User đăng
     const songsQuery = query(collection(db, "songs"), where("uploader", "==", username));
     const songsSnap = await getDocs(songsQuery);
     const uploadedSongs = [];
     songsSnap.forEach((doc) => uploadedSongs.push({ id: doc.id, ...doc.data() }));
 
-    // 2. Lấy Playlist CÔNG KHAI của User
     const playlistQuery = query(
       collection(db, "playlists"),
       where("username", "==", username),
@@ -143,9 +135,7 @@ app.get('/api/user-profile-data/:username', async (req, res) => {
   }
 });
 
-// ==========================================
-// API 5: XÓA BÀI HÁT (Chỉ người đăng hoặc Admin)
-// ==========================================
+// API 5: XÓA BÀI HÁT
 app.delete('/api/delete-music/:id', async (req, res) => {
   try {
     const songId = req.params.id;
@@ -173,9 +163,7 @@ app.delete('/api/delete-music/:id', async (req, res) => {
   }
 });
 
-// ==========================================
-// API 6: TẢI NHẠC LÊN CLOUDINARY & FIREBASE (SỬA LỖI 404)
-// ==========================================
+// API 6: TẢI NHẠC LÊN CLOUDINARY & FIREBASE
 app.post('/api/upload-music', upload.fields([
   { name: 'audio', maxCount: 1 },
   { name: 'cover', maxCount: 1 }
@@ -189,13 +177,11 @@ app.post('/api/upload-music', upload.fields([
       return res.status(400).json({ message: "Thiếu dữ liệu file nhạc hoặc thông tin bài hát!" });
     }
 
-    // 1. Upload file mp3 lên Cloudinary (loại resource: video/raw)
     const audioResult = await cloudinary.uploader.upload(audioFile.path, {
-      resource_type: "video", // Cloudinary lưu audio dưới định dạng video
+      resource_type: "video",
       folder: "enroy_music"
     });
 
-    // 2. Upload ảnh bìa lên Cloudinary (nếu có)
     let coverUrl = "";
     if (coverFile) {
       const coverResult = await cloudinary.uploader.upload(coverFile.path, {
@@ -204,11 +190,9 @@ app.post('/api/upload-music', upload.fields([
       coverUrl = coverResult.secure_url;
     }
 
-    // Xóa file tạm trên server local sau khi upload thành công
     if (fs.existsSync(audioFile.path)) fs.unlinkSync(audioFile.path);
     if (coverFile && fs.existsSync(coverFile.path)) fs.unlinkSync(coverFile.path);
 
-    // 3. Lưu thông tin bài hát vào Firestore Database
     const songDoc = await addDoc(collection(db, "songs"), {
       title,
       artist,
@@ -226,10 +210,7 @@ app.post('/api/upload-music', upload.fields([
   }
 });
 
-
-// server.js
-
-// API XÓA PLAYLIST (Admin hoặc Chủ sở hữu)
+// API 7: XÓA PLAYLIST
 app.delete('/api/delete-playlist/:id', async (req, res) => {
   try {
     const playlistId = req.params.id;
@@ -254,7 +235,7 @@ app.delete('/api/delete-playlist/:id', async (req, res) => {
   }
 });
 
-// API CẬP NHẬT DẠNG THÊM / XÓA BÀI HÁT KHỎI PLAYLIST
+// API 8: CẬP NHẬT DẠNG THÊM / XÓA BÀI HÁT KHỎI PLAYLIST
 app.put('/api/update-playlist-songs/:id', async (req, res) => {
   try {
     const playlistId = req.params.id;
@@ -270,7 +251,6 @@ app.put('/api/update-playlist-songs/:id', async (req, res) => {
       return res.status(403).json({ message: "Bạn không có quyền chỉnh sửa!" });
     }
 
-    const { updateDoc } = require('firebase/firestore');
     await updateDoc(plRef, { songIds });
 
     res.status(200).json({ message: "Cập nhật Playlist thành công!" });
@@ -278,9 +258,8 @@ app.put('/api/update-playlist-songs/:id', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
-  
-const PORT = 5000;
+
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
-
