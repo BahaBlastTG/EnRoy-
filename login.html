@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- header -->
+    <header class="header">
+        <div class="header__logo">
+            <a href="index.html"><img src="images/logo.png" alt="Logo"></a>
+        </div>
+        <nav class="header__nav">
+            <ul class="header__nav-list">
+                <li class="header__nav-item"><a href="index.html">Trang chủ</a></li>
+                <li class="header__nav-item"><a href="#">Giới thiệu</a></li>
+                <li class="header__nav-item"><a href="#">Đề xuất</a></li>
+                <li class="header__nav-item"><a href="#">Liên hệ</a></li>
+            </ul>
+        </nav>
+    </header>
+
+        <!-- login form -->
+    <div class="login__wrapper">
+        <h1 class="login__title">Đăng nhập</h1>
+        <form id="login-form" class="login__form">
+            <input type="email" id="login-email" placeholder="Email của bạn" required>
+            <input type="password" id="login-password" placeholder="Mật khẩu" required>
+            <button type="submit">Đăng nhập</button>
+        </form>
+        <a href="signin.html" class="sign_up">Chưa có tài khoản? Đăng ký ngay</a>
+    </div>
+
+    <script type="module" src="js/login.js"></script>
+    <!-- footer -->
+    <footer class="footer">
+        <p>&copy; 2026 EnRoy. All rights reserved.</p>
+    </footer>
+</body>
+</html>

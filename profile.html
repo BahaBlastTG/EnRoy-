@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hồ sơ cá nhân - EnRoy</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.9.0/fonts/remixicon.css" rel="stylesheet"/>
+    <link rel="icon" href="img/logo.png" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header__logo">
+            <a href="index.html"><img src="img/logo.png" alt="Logo"></a>
+        </div>
+        <nav class="header__nav">
+            <ul class="header__nav-list">
+                <li class="header__nav-item"><a href="index.html">Trang chủ</a></li>
+                <li class="header__nav-item"><a href="about.html">Giới thiệu</a></li>
+                <li class="header__nav-item"><a href="#">Đề xuất</a></li>
+                <li class="header__nav-item"><a href="#">Liên hệ</a></li>
+            </ul>
+        </nav>
+        
+        <div class="profile" style="display: flex; gap: 12px; align-items: center;">
+            <a href="index.html" class="header__btn" style="text-decoration: none;">
+                <i class="ri-arrow-left-line"></i> Trang chủ
+            </a>
+            <button id="logout-btn" class="header__btn" style="background-color: #ff0055; border: none; cursor: pointer;">
+                <i class="ri-logout-box-r-line"></i> Đăng xuất
+            </button>
+        </div>
+    </header>
+
+    <!-- Sidebar Player -->
+    <aside id="player-sidebar" class="player-sidebar">
+        <div class="player-card">
+            <img id="player-img" src="img/song_cover_place_holder.jpg" alt="Album Art">
+            <div class="player-info">
+                <h2 id="player-title">Chọn bài hát để phát</h2>
+                <p id="player-artist">Nghệ sĩ</p>
+                <small id="player-uploader" style="opacity: 0.6; display: block; font-size: 0.8rem; margin-top: 4px;"></small>
+            </div>
+
+            <div class="player-progress">
+                <span id="player-current-time">0:00</span>
+                <input type="range" id="player-seek" value="0" min="0" max="100">
+                <span id="player-duration">0:00</span>
+            </div>
+
+            <div class="player-controls">
+                <button id="player-shuffle-btn" class="btn-ctrl" title="Bật/Tắt xáo trộn"><i class="fa-solid fa-shuffle"></i></button>
+                <button id="player-prev-btn" class="btn-ctrl" title="Bài trước"><i class="fa-solid fa-backward-step"></i></button>
+                <button id="player-play-btn" class="btn-ctrl play-main" title="Phát/Tạm dừng"><i class="fa-solid fa-play"></i></button>
+                <button id="player-next-btn" class="btn-ctrl" title="Bài tiếp theo"><i class="fa-solid fa-forward-step"></i></button>
+                <button id="player-repeat-btn" class="btn-ctrl" title="Chế độ lặp"><i class="fa-solid fa-repeat"></i></button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main id="main-container" class="main-container">
+        <div class="main-content">
+            <section class="playlist__section">
+                <!-- THÔNG TIN NGƯỜI DÙNG -->
+                <div class="profile-header-info" style="display: flex; gap: 20px; align-items: center; margin-bottom: 24px;">
+                    <img id="profile-avatar" src="img/logo.png" style="width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.2);">
+                    <div>
+                        <h2 id="profile-username" style="font-size: 1.8rem; margin-bottom: 4px;">Đang tải...</h2>
+                        <p id="profile-email" style="opacity: 0.7; margin: 0;"></p>
+                    </div>
+                </div>
+
+                <hr style="border-color: rgba(255,255,255,0.1); margin: 24px 0;">
+
+                <!-- BÀI HÁT ĐÃ ĐĂNG -->
+                <div class="profile-section" style="margin-bottom: 32px;">
+                    <h2 class="playlist__grid-title"><i class="fa-solid fa-music"></i> Bài hát đã đăng</h2>
+                    <div id="user-uploaded-songs">
+                        <!-- Render bằng JS -->
+                    </div>
+                </div>
+
+                <!-- PLAYLIST CÔNG KHAI -->
+                <div class="profile-section">
+                    <h2 class="playlist__grid-title"><i class="fa-solid fa-list"></i> Playlist công khai</h2>
+                    <div id="user-public-playlists" class="playlist-vertical-list">
+                        <!-- Render bằng JS -->
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2026 EnRoy. All rights reserved.</p>
+    </footer>
+
+    <script src="js/profile.js"></script>
+</body>
+</html>
