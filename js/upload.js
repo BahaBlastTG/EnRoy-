@@ -1,5 +1,7 @@
 // js/upload.js
 
+const API_BASE_URL = 'https://enroy-backend.onrender.com';
+
 // 1. Kiểm tra đăng nhập
 const currentUser = JSON.parse(localStorage.getItem('currentUser'));
 if (!currentUser) {
@@ -71,7 +73,7 @@ if (uploadForm) {
     formData.append('uploader', currentUser.username || currentUser.email);
 
     try {
-      const response = await fetch('http://localhost:5000/api/upload-music', {
+      const response = await fetch(`${API_BASE_URL}/api/upload-music`, {
         method: 'POST',
         body: formData
       });
