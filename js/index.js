@@ -1,7 +1,6 @@
 // js/index.js
 
-const API_BASE_URL = 'https://enroy-backend.onrender.com';
-
+const API_BASE_URL = 'https://enroy.onrender.com';
 const globalAudio = new Audio();
 const playerImg = document.getElementById('player-img');
 const playerTitle = document.getElementById('player-title');
