@@ -77,7 +77,7 @@ function renderUploadedSongs() {
     return;
   }
 
-  profileSongs.forEach((song, index) => {
+  profileSongs.forEach((song) => {
     const songItem = document.createElement('div');
     songItem.className = 'song__item';
     songItem.setAttribute('data-id', song.id);
@@ -127,7 +127,7 @@ function renderPublicPlaylists() {
             <span style="font-size: 0.8rem; padding: 4px 8px; border-radius: 4px; background: rgba(255,255,255,0.1); color: #4caf50;">
                 <i class="fa-solid fa-globe"></i> Công khai
             </span>
-            <i class="fa-solid fa-chevron-down playlist-arrow-icon"></i>
+            <i class="fa-solid fa-chevron-down playlist-arrow-icon" style="transition: transform 0.3s;"></i>
           </div>
       </div>
       <div class="playlist-songs-list" style="display:none; padding: 10px;"></div>
@@ -186,9 +186,9 @@ function prevSong() {
   playSongInQueue((currentSongIndex - 1 + currentQueue.length) % currentQueue.length);
 }
 
-// 6. XỬ LÝ SỰ KIỆN CLICK (ĐÃ SỬA LỖI)
+// 6. XỬ LÝ SỰ KIỆN CLICK
 document.addEventListener('click', async (e) => {
-  // 1. Xóa bài hát đã đăng
+  // Xóa bài hát đã đăng
   const deleteBtn = e.target.closest('.song__delete-btn');
   if (deleteBtn) {
     e.stopPropagation();
@@ -212,7 +212,7 @@ document.addEventListener('click', async (e) => {
     return;
   }
 
-  // 2. Toggle hiển thị playlist (Cho lên trước để tránh đụng với click bài hát)
+  // Toggle hiển thị playlist
   const playlistHeader = e.target.closest('.playlist-card-header');
   if (playlistHeader) {
     const parentCard = playlistHeader.closest('.playlist-card-item');
@@ -227,17 +227,15 @@ document.addEventListener('click', async (e) => {
     return;
   }
 
-  // 3. Bấm vào bài hát để phát (Sửa lỗi ép kiểu & phân biệt nguồn phát)
+  // Bấm vào bài hát để phát
   const songItem = e.target.closest('.song__item');
   if (songItem && !e.target.closest('button')) {
     const songId = songItem.getAttribute('data-id');
     const dataSource = songItem.getAttribute('data-source');
 
     if (dataSource === 'uploaded') {
-      // Phát từ danh sách nhạc đã đăng
       currentQueue = [...profileSongs];
     } else if (dataSource && dataSource.startsWith('playlist-')) {
-      // Phát từ Playlist cụ thể
       const playlistId = dataSource.replace('playlist-', '');
       const playlist = profilePlaylists.find(pl => String(pl.id) === String(playlistId));
       if (playlist && playlist.songIds) {
@@ -245,20 +243,8 @@ document.addEventListener('click', async (e) => {
       }
     }
 
-    // So sánh bằng String() để tránh lỗi khác kiểu dữ liệu (String vs Number)
     const index = currentQueue.findIndex(s => String(s.id) === String(songId));
-    if (index !== -1) {
-      playSongInQueue(index);
-    }
-  }
-});
-
-  // Toggle hiển thị playlist
-  const playlistHeader = e.target.closest('.playlist-card-header');
-  if (playlistHeader) {
-    const parentCard = playlistHeader.closest('.playlist-card-item');
-    const songListContainer = parentCard.querySelector('.playlist-songs-list');
-    songListContainer.style.display = songListContainer.style.display === 'block' ? 'none' : 'block';
+    if (index !== -1) playSongInQueue(index);
   }
 });
 
