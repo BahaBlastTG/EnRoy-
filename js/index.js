@@ -1,5 +1,7 @@
 // js/index.js
 
+const API_BASE_URL = 'https://enroy-backend.onrender.com';
+
 const globalAudio = new Audio();
 const playerImg = document.getElementById('player-img');
 const playerTitle = document.getElementById('player-title');
@@ -68,7 +70,7 @@ async function loadSongsFromBackend() {
   const isAdmin = checkIsAdmin(currentUser);
 
   try {
-    const response = await fetch('http://localhost:5000/api/get-music');
+    const response = await fetch(`${API_BASE_URL}/api/get-music`);
     allSongs = await response.json();
     
     if (currentQueue.length === 0) {
@@ -141,7 +143,7 @@ async function loadUserPlaylists() {
 
   try {
     const username = currentUser.username || currentUser.email;
-    const res = await fetch(`http://localhost:5000/api/get-user-playlists/${username}`);
+    const res = await fetch(`${API_BASE_URL}/api/get-user-playlists/${username}`);
     const userPlaylists = await res.json();
 
     container.innerHTML = '';
@@ -232,15 +234,11 @@ function prevSong() {
   playSongInQueue(prevIndex);
 }
 
-// js/index.js
-
-// ... (Giữ nguyên các đoạn code khởi tạo và hàm ở trên)
-
-// 5. SỰ KIỆN CLICK TOÀN CỤC (SỬA LỖI NÚT XÓA / THÊM BÀI HÁT / PLAYLIST)
+// 5. SỰ KIỆN CLICK TOÀN CỤC
 document.addEventListener('click', async (e) => {
   const currentUser = JSON.parse(localStorage.getItem('currentUser'));
 
-  // A. XÓA BÀI HÁT KHI BẤM NÚT THÙNG RÁC (DÀNH CHO ADMIN VÀ UPLOADER)
+  // A. XÓA BÀI HÁT KHI BẤM NÚT THÙNG RÁC
   const deleteSongBtn = e.target.closest('.song__delete-btn');
   if (deleteSongBtn) {
     e.stopPropagation();
@@ -253,7 +251,7 @@ document.addEventListener('click', async (e) => {
 
     if (confirm("Bạn có chắc chắn muốn xóa bài hát này khỏi hệ thống không?")) {
       try {
-        const res = await fetch(`http://localhost:5000/api/delete-music/${songId}`, {
+        const res = await fetch(`${API_BASE_URL}/api/delete-music/${songId}`, {
           method: 'DELETE',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -265,7 +263,7 @@ document.addEventListener('click', async (e) => {
         const data = await res.json();
         if (res.ok) {
           alert("Đã xóa bài hát thành công!");
-          loadSongsFromBackend(); // Tải lại danh sách sau khi xóa
+          loadSongsFromBackend();
         } else {
           alert(data.message || "Không thể xóa bài hát!");
         }
@@ -277,7 +275,7 @@ document.addEventListener('click', async (e) => {
     return;
   }
 
-  // B. THÊM BÀI HÁT VÀO PLAYLIST KHI BẤM NÚT DẤU CỘNG (+)
+  // B. THÊM BÀI HÁT VÀO PLAYLIST
   const addPlaylistBtn = e.target.closest('.song__add-playlist-btn');
   if (addPlaylistBtn) {
     e.stopPropagation();
@@ -288,11 +286,9 @@ document.addEventListener('click', async (e) => {
       return;
     }
 
-    // Mở modal tạo playlist hoặc cho người dùng chọn playlist có sẵn
     const openModal = document.getElementById('open-playlist-modal-btn');
     if (openModal) {
       openModal.click();
-      // Tự động tích chọn bài hát này trong modal
       setTimeout(() => {
         const chk = document.getElementById(`song-chk-${songId}`);
         if (chk) chk.checked = true;
@@ -308,7 +304,7 @@ document.addEventListener('click', async (e) => {
     const plId = deletePlBtn.getAttribute('data-pl-id');
     if (confirm("Bạn có chắc chắn muốn xóa Playlist này không?")) {
       try {
-        const res = await fetch(`http://localhost:5000/api/delete-playlist/${plId}`, {
+        const res = await fetch(`${API_BASE_URL}/api/delete-playlist/${plId}`, {
           method: 'DELETE',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -330,7 +326,7 @@ document.addEventListener('click', async (e) => {
     return;
   }
 
-  // D. XÓA BÀI HÁT KHỎI PLAYLIST (NÚT DẤU TRỪ)
+  // D. XÓA BÀI HÁT KHỎI PLAYLIST
   const removeSongFromPlBtn = e.target.closest('.song__remove-from-pl-btn');
   if (removeSongFromPlBtn) {
     e.stopPropagation();
@@ -338,13 +334,13 @@ document.addEventListener('click', async (e) => {
     const plId = removeSongFromPlBtn.getAttribute('data-pl-id');
 
     const username = currentUser.username || currentUser.email;
-    const resPl = await fetch(`http://localhost:5000/api/get-user-playlists/${username}`);
+    const resPl = await fetch(`${API_BASE_URL}/api/get-user-playlists/${username}`);
     const playlists = await resPl.json();
     const targetPl = playlists.find(p => p.id === plId);
 
     if (targetPl) {
       const updatedSongIds = targetPl.songIds.filter(id => id !== songId);
-      await fetch(`http://localhost:5000/api/update-playlist-songs/${plId}`, {
+      await fetch(`${API_BASE_URL}/api/update-playlist-songs/${plId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -461,7 +457,7 @@ if (createPlaylistForm) {
     const songIds = Array.from(selectedCheckboxes).map(chk => chk.value);
 
     try {
-      const response = await fetch('http://localhost:5000/api/create-playlist', {
+      const response = await fetch(`${API_BASE_URL}/api/create-playlist`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
