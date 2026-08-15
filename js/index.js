@@ -62,14 +62,13 @@ function renderHeaderAuth() {
   }
 }
 
-// 2. TẢI VÀ RENDER TẤT CẢ BÀI HÁT
 async function loadSongsFromBackend() {
   const container = document.getElementById('song-list-container');
   const currentUser = JSON.parse(localStorage.getItem('currentUser')) || {};
   const isAdmin = checkIsAdmin(currentUser);
 
   try {
-    const response = await fetch('https://enroy.onrender.com/api/get-music')
+    const response = await fetch(`${API_BASE_URL}/api/get-music`);
     allSongs = await response.json();
     
     if (currentQueue.length === 0) {
