@@ -1,5 +1,8 @@
 // js/profile.js
 
+// 1. Cấu hình URL Backend Render
+const API_BASE_URL = 'https://enroy.onrender.com';
+
 const globalAudio = new Audio();
 const playerImg = document.getElementById('player-img');
 const playerTitle = document.getElementById('player-title');
@@ -50,7 +53,7 @@ function initProfile() {
 // 2. TẢI BÀI HÁT & PLAYLIST CỦA USER
 async function loadProfileData(username) {
   try {
-    const res = await fetch(`http://localhost:5000/api/user-profile-data/${username}`);
+    const res = await fetch(`${API_BASE_URL}/api/user-profile-data/${username}`);
     const data = await res.json();
 
     profileSongs = data.uploadedSongs || [];
@@ -193,7 +196,7 @@ document.addEventListener('click', async (e) => {
     if (confirm("Bạn có chắc chắn muốn xóa bài hát này khỏi hệ thống?")) {
       try {
         const username = currentUser.username || currentUser.email;
-        const res = await fetch(`http://localhost:5000/api/delete-music/${songId}`, {
+        const res = await fetch(`${API_BASE_URL}/api/delete-music/${songId}`, {
           method: 'DELETE',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ username, isAdmin: currentUser.email === 'admin@gmail.com' })
