@@ -391,3 +391,23 @@ main {
 .footer p {
     margin: 0;
 }
+
+/* Đảm bảo khung đỏ giữ nguyên kích thước kể cả khi JS thêm class has-player */
+body.has-player .main-container,
+body.player-active .main-container,
+.main-container,
+.main-content {
+    width: 100% !important;
+    max-width: 860px !important;
+    background: #750303 !important;
+    border-radius: 28px !important;
+    padding: 36px !important;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Ép thẻ bài hát ăn theo nền đỏ thẫm */
+.song__item {
+    background: #500004 !important;
+    border-radius: 18px !important;
+    padding: 12px 20px !important;
+}
