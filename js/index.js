@@ -19,10 +19,9 @@ const shuffleBtn = document.getElementById('player-shuffle-btn');
 let allSongs = [];
 let currentQueue = [];
 let currentSongIndex = -1;
-let activePlaylistId = null;
 
 let isShuffle = false;
-let repeatMode = 0;
+let repeatMode = 0; // 0: Off, 1: Repeat All, 2: Repeat One
 
 function checkIsAdmin(user) {
   if (!user) return false;
@@ -30,7 +29,7 @@ function checkIsAdmin(user) {
 }
 
 function formatTime(seconds) {
-  if (isNaN(seconds)) return "0:00";
+  if (isNaN(seconds) || seconds < 0) return "0:00";
   const mins = Math.floor(seconds / 60);
   const secs = Math.floor(seconds % 60);
   return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
@@ -91,7 +90,7 @@ async function loadSongsFromBackend() {
   }
 }
 
-// TAO HTML BÀI HÁT BỔ SUNG NÚT XÓA / THÊM VÀO PLAYLIST
+// TẠO HTML BÀI HÁT
 function createSongItemHTML(song, index, canDelete, source = 'main', playlistId = null) {
   const songItem = document.createElement('div');
   songItem.className = 'song__item';
@@ -131,7 +130,7 @@ function createSongItemHTML(song, index, canDelete, source = 'main', playlistId 
   return songItem;
 }
 
-// 3. TẢI VÀ RENDER PLAYLIST KÈM NÚT XÓA PLAYLIST
+// 3. TẢI VÀ RENDER PLAYLIST
 async function loadUserPlaylists() {
   const container = document.getElementById('playlist-list-container');
   const currentUser = JSON.parse(localStorage.getItem('currentUser'));
@@ -178,9 +177,7 @@ async function loadUserPlaylists() {
             </div>
         </div>
 
-        <div class="playlist-songs-list" style="display:none; padding: 10px;">
-           <!-- Danh sách bài hát xổ dọc -->
-        </div>
+        <div class="playlist-songs-list" style="display:none; padding: 10px;"></div>
       `;
 
       const songsListContainer = card.querySelector('.playlist-songs-list');
@@ -222,21 +219,44 @@ function playSongInQueue(index) {
 
 function nextSong() {
   if (currentQueue.length === 0) return;
-  let nextIndex = (currentSongIndex + 1) % currentQueue.length;
-  playSongInQueue(nextIndex);
+
+  if (repeatMode === 2) {
+    // Lặp lại 1 bài
+    playSongInQueue(currentSongIndex);
+    return;
+  }
+
+  if (isShuffle) {
+    // Tráo bài ngẫu nhiên
+    let randomIndex = Math.floor(Math.random() * currentQueue.length);
+    if (currentQueue.length > 1 && randomIndex === currentSongIndex) {
+      randomIndex = (currentSongIndex + 1) % currentQueue.length;
+    }
+    playSongInQueue(randomIndex);
+  } else {
+    // Chuyển bài kế tiếp
+    let nextIndex = (currentSongIndex + 1) % currentQueue.length;
+    playSongInQueue(nextIndex);
+  }
 }
 
 function prevSong() {
   if (currentQueue.length === 0) return;
-  let prevIndex = (currentSongIndex - 1 + currentQueue.length) % currentQueue.length;
-  playSongInQueue(prevIndex);
+
+  if (isShuffle) {
+    let randomIndex = Math.floor(Math.random() * currentQueue.length);
+    playSongInQueue(randomIndex);
+  } else {
+    let prevIndex = (currentSongIndex - 1 + currentQueue.length) % currentQueue.length;
+    playSongInQueue(prevIndex);
+  }
 }
 
 // 5. SỰ KIỆN CLICK TOÀN CỤC
 document.addEventListener('click', async (e) => {
   const currentUser = JSON.parse(localStorage.getItem('currentUser'));
 
-  // A. XÓA BÀI HÁT KHI BẤM NÚT THÙNG RÁC
+  // A. XÓA BÀI HÁT
   const deleteSongBtn = e.target.closest('.song__delete-btn');
   if (deleteSongBtn) {
     e.stopPropagation();
@@ -266,7 +286,6 @@ document.addEventListener('click', async (e) => {
           alert(data.message || "Không thể xóa bài hát!");
         }
       } catch (err) {
-        console.error("Lỗi khi xóa bài hát:", err);
         alert("Có lỗi xảy ra khi gửi yêu cầu xóa!");
       }
     }
@@ -314,8 +333,6 @@ document.addEventListener('click', async (e) => {
         if (res.ok) {
           alert("Đã xóa Playlist!");
           loadUserPlaylists();
-        } else {
-          alert("Xóa Playlist thất bại!");
         }
       } catch (err) {
         alert("Không thể xóa Playlist!");
@@ -334,10 +351,10 @@ document.addEventListener('click', async (e) => {
     const username = currentUser.username || currentUser.email;
     const resPl = await fetch(`${API_BASE_URL}/api/get-user-playlists/${username}`);
     const playlists = await resPl.json();
-    const targetPl = playlists.find(p => p.id === plId);
+    const targetPl = playlists.find(p => String(p.id) === String(plId));
 
     if (targetPl) {
-      const updatedSongIds = targetPl.songIds.filter(id => id !== songId);
+      const updatedSongIds = targetPl.songIds.filter(id => String(id) !== String(songId));
       await fetch(`${API_BASE_URL}/api/update-playlist-songs/${plId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -365,18 +382,18 @@ document.addEventListener('click', async (e) => {
       currentQueue = [];
       songElements.forEach(elem => {
         const id = elem.getAttribute('data-id');
-        const songObj = allSongs.find(s => s.id === id);
+        const songObj = allSongs.find(s => String(s.id) === String(id));
         if (songObj) currentQueue.push(songObj);
       });
     } else {
       currentQueue = [...allSongs];
     }
 
-    const clickedIndex = currentQueue.findIndex(s => s.id === songId);
+    const clickedIndex = currentQueue.findIndex(s => String(s.id) === String(songId));
     if (clickedIndex !== -1) playSongInQueue(clickedIndex);
   }
 
-  // F. TOGGLE ĐỔ MỞ DANH SÁCH BÀI HÁT TRONG PLAYLIST
+  // F. TOGGLE ĐỔ MỞ PLAYLIST
   const playlistHeader = e.target.closest('.playlist-card-header');
   if (playlistHeader && !e.target.closest('.delete-playlist-btn')) {
     const parentCard = playlistHeader.closest('.playlist-card-item');
@@ -387,7 +404,54 @@ document.addEventListener('click', async (e) => {
   }
 });
 
-// CONTROL EVENTS
+// 6. SỰ KIỆN PLAYER & THANH TUA
+globalAudio.addEventListener('loadedmetadata', () => {
+  if (playerDuration) playerDuration.innerText = formatTime(globalAudio.duration);
+  if (playerSeek) playerSeek.max = Math.floor(globalAudio.duration || 0);
+});
+
+globalAudio.addEventListener('timeupdate', () => {
+  if (playerCurrentTime) playerCurrentTime.innerText = formatTime(globalAudio.currentTime);
+  if (playerSeek && !isNaN(globalAudio.duration)) {
+    playerSeek.value = Math.floor(globalAudio.currentTime);
+  }
+});
+
+if (playerSeek) {
+  playerSeek.addEventListener('input', () => {
+    globalAudio.currentTime = playerSeek.value;
+  });
+}
+
+// BẬT / TẮT SHUFFLE
+if (shuffleBtn) {
+  shuffleBtn.addEventListener('click', () => {
+    isShuffle = !isShuffle;
+    shuffleBtn.style.color = isShuffle ? '#ff0055' : '#fff';
+    shuffleBtn.style.opacity = isShuffle ? '1' : '0.7';
+  });
+}
+
+// CHUYỂN ĐỔI CHẾ ĐỘ REPEAT (0: Tắt, 1: Lặp tất cả, 2: Lặp 1 bài)
+if (repeatBtn) {
+  repeatBtn.addEventListener('click', () => {
+    repeatMode = (repeatMode + 1) % 3;
+    if (repeatMode === 0) {
+      repeatBtn.style.color = '#fff';
+      repeatBtn.style.opacity = '0.7';
+      repeatBtn.innerHTML = '<i class="fa-solid fa-repeat"></i>';
+    } else if (repeatMode === 1) {
+      repeatBtn.style.color = '#ff0055';
+      repeatBtn.style.opacity = '1';
+      repeatBtn.innerHTML = '<i class="fa-solid fa-repeat"></i>';
+    } else if (repeatMode === 2) {
+      repeatBtn.style.color = '#ff0055';
+      repeatBtn.style.opacity = '1';
+      repeatBtn.innerHTML = '<i class="fa-solid fa-repeat-1"></i>';
+    }
+  });
+}
+
 globalAudio.addEventListener('ended', nextSong);
 if (nextBtn) nextBtn.addEventListener('click', nextSong);
 if (prevBtn) prevBtn.addEventListener('click', prevSong);
@@ -481,3 +545,4 @@ if (createPlaylistForm) {
 // KHỞI CHẠY
 renderHeaderAuth();
 loadSongsFromBackend();
+
