@@ -425,3 +425,111 @@ body.player-active .main-container,
     border-radius: 20px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
+
+/* FIX PLAYER SIDEBAR: Cố định góc trái màn hình, không đè vỡ khung đỏ */
+.player-sidebar {
+    position: fixed;
+    top: 100px;
+    left: 24px;
+    width: 280px;
+    z-index: 900;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+}
+
+.player-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    text-align: center;
+}
+
+.player-card img#player-img {
+    width: 100%;
+    aspect-ratio: 1/1;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+}
+
+.player-info h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.player-info p, 
+.player-info span {
+    font-size: 0.85rem;
+    color: var(--muted);
+}
+
+.player-progress {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    margin-top: 8px;
+}
+
+.player-progress input[type="range"] {
+    flex: 1;
+    accent-color: var(--primary);
+    cursor: pointer;
+}
+
+.player-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.btn-ctrl {
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: transform 0.2s, color 0.2s;
+}
+
+.btn-ctrl:hover {
+    color: var(--accent);
+    transform: scale(1.15);
+}
+
+.btn-ctrl.play-main {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Đẩy khung nội dung chính lệch sang phải một khoảng để không bị Player che mất */
+body.has-player .main-container {
+    margin-left: calc(50% - 430px) !important; /* Giữ khung đỏ nằm giữa cân đối */
+}
+
+/* Responsive: Ẩn sidebar trên màn hình nhỏ hoặc đưa xuống dưới */
+@media (max-width: 1200px) {
+    .player-sidebar {
+        position: relative;
+        top: 0;
+        left: 0;
+        width: 100%;
+        max-width: 860px;
+        margin: 0 auto 20px auto;
+    }
+}
