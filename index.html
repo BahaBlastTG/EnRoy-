@@ -9,29 +9,55 @@
     <link rel="icon" href="img/logo.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
-<body>
+<body class="has-player">
     <!-- Header -->
     <header class="header">
         <div class="header__logo">
             <a href="index.html"><img src="img/logo.png" alt="Logo"></a>
         </div>
-       <nav class="header__nav">
-  <ul class="header__nav-list">
-    <li class="header__nav-item"><a href="index.html" class="active">Trang chủ</a></li>
-    <li class="header__nav-item"><a href="playlists.html">Playlist của tôi</a></li>
-    <li class="header__nav-item"><a href="#">Giới thiệu</a></li>
-    <li class="header__nav-item"><a href="#">Đề xuất</a></li>
-    <li class="header__nav-item"><a href="#">Liên hệ</a></li>
-  </ul>
-</nav>
+        <nav class="header__nav">
+            <ul class="header__nav-list">
+                <li class="header__nav-item"><a href="index.html" class="active">Trang chủ</a></li>
+                <li class="header__nav-item"><a href="playlists.html">Playlist của tôi</a></li>
+                <li class="header__nav-item"><a href="#">Giới thiệu</a></li>
+                <li class="header__nav-item"><a href="#">Đề xuất</a></li>
+                <li class="header__nav-item"><a href="#">Liên hệ</a></li>
+            </ul>
+        </nav>
+        <div class="profile" id="user-header-area"></div>
+    </header>
 
-<!-- Main Container loại bỏ phần Playlist để hiển thị riêng danh sách Bài hát Đề xuất -->
-<main class="main-container">
-  <div class="main-content">
-    <h1 style="font-size: 1.8rem; margin-bottom: 20px;">Đề xuất</h1>
-    <div id="song-list-container" style="display: flex; flex-direction: column; gap: 16px; width: 100%;"></div>
-  </div>
-</main>
+    <!-- Player Sidebar -->
+    <aside class="player-sidebar">
+        <div class="player-card">
+            <img id="player-img" src="img/song_cover_place_holder.jpg" alt="Cover">
+            <div class="player-info">
+                <h2 id="player-title">Chọn bài hát để phát</h2>
+                <p id="player-artist">Nghệ sĩ</p>
+                <span id="player-uploader">---</span>
+            </div>
+            <div class="player-progress">
+                <span id="player-current-time">0:00</span>
+                <input type="range" id="player-seek" value="0" min="0" max="100">
+                <span id="player-duration">0:00</span>
+            </div>
+            <div class="player-controls">
+                <button class="btn-ctrl" id="player-shuffle-btn" title="Tráo bài"><i class="fa-solid fa-shuffle"></i></button>
+                <button class="btn-ctrl" id="player-prev-btn"><i class="fa-solid fa-backward-step"></i></button>
+                <button class="btn-ctrl play-main" id="player-play-btn"><i class="fa-solid fa-play"></i></button>
+                <button class="btn-ctrl" id="player-next-btn"><i class="fa-solid fa-forward-step"></i></button>
+                <button class="btn-ctrl" id="player-repeat-btn" title="Lặp lại"><i class="fa-solid fa-repeat"></i></button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content Container -->
+    <main class="main-container">
+        <div class="main-content">
+            <h1 style="font-size: 1.8rem; margin-bottom: 20px;">Đề xuất</h1>
+            <div id="song-list-container" style="display: flex; flex-direction: column; gap: 16px; width: 100%;"></div>
+        </div>
+    </main>
 
     <!-- Footer -->
     <footer class="footer">
