@@ -15,98 +15,23 @@
         <div class="header__logo">
             <a href="index.html"><img src="img/logo.png" alt="Logo"></a>
         </div>
-        <nav class="header__nav">
-            <ul class="header__nav-list">
-                <li class="header__nav-item"><a href="index.html">Trang chủ</a></li>
-                <li class="header__nav-item"><a href="about.html">Giới thiệu</a></li>
-                <li class="header__nav-item"><a href="#">Đề xuất</a></li>
-                <li class="header__nav-item"><a href="#">Liên hệ</a></li>
-            </ul>
-        </nav>
-        
+       <nav class="header__nav">
+  <ul class="header__nav-list">
+    <li class="header__nav-item"><a href="index.html" class="active">Trang chủ</a></li>
+    <li class="header__nav-item"><a href="playlists.html">Playlist của tôi</a></li>
+    <li class="header__nav-item"><a href="#">Giới thiệu</a></li>
+    <li class="header__nav-item"><a href="#">Đề xuất</a></li>
+    <li class="header__nav-item"><a href="#">Liên hệ</a></li>
+  </ul>
+</nav>
 
-        <div class="profile" id="user-header-area"></div>
-    </header>
-
-    <!-- Sidebar Player -->
-    <aside id="player-sidebar" class="player-sidebar">
-        <div class="player-card">
-            <img id="player-img" src="img/song_cover_place_holder.jpg" alt="Album Art">
-            <div class="player-info">
-                <h2 id="player-title">Chọn bài hát để phát</h2>
-                <p id="player-artist">Nghệ sĩ</p>
-            </div>
-
-            <div class="player-progress">
-                <span id="player-current-time">0:00</span>
-                <input type="range" id="player-seek" value="0" min="0" max="100">
-                <span id="player-duration">0:00</span>
-            </div>
-
-            <div class="player-controls">
-                <button id="player-shuffle-btn" class="btn-ctrl" title="Bật/Tắt xáo trộn"><i class="fa-solid fa-shuffle"></i></button>
-                <button id="player-prev-btn" class="btn-ctrl" title="Bài trước"><i class="fa-solid fa-backward-step"></i></button>
-                <button id="player-play-btn" class="btn-ctrl play-main" title="Phát/Tạm dừng"><i class="fa-solid fa-play"></i></button>
-                <button id="player-next-btn" class="btn-ctrl" title="Bài tiếp theo"><i class="fa-solid fa-forward-step"></i></button>
-                <button id="player-repeat-btn" class="btn-ctrl" title="Chế độ lặp"><i class="fa-solid fa-repeat"></i></button>
-            </div>
-        </div>
-    </aside>
-
-    <!-- Main Content -->
-    <main id="main-container" class="main-container">
-        <div class="main-content">
-            <section class="playlist__section">
-                <!-- NÚT MỞ FORM TẠO PLAYLIST & KHUNG HIỂN THỊ PLAYLIST -->
-<div class="playlist-header-wrapper">
-    <div class="playlist-title-box">
-        <h2>Playlist của tôi</h2>
-        <button id="open-playlist-modal-btn" class="header__btn">
-            <i class="fa-solid fa-plus"></i> Tạo Playlist
-        </button>
-    </div>
-    
-    <!-- Danh sách Playlist hiển thị (có Scrollbar) -->
-    <div id="playlist-list-container" class="playlist-vertical-list">
-        <!-- JS Render danh sách Playlist ở đây -->
-    </div>
-</div>
-
-<!-- POPUP MODAL TẠO PLAYLIST -->
-<div id="playlist-modal" class="modal-overlay">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3>Tạo Playlist Mới</h3>
-            <span id="close-playlist-modal" class="close-btn">&times;</span>
-        </div>
-        <form id="create-playlist-form">
-            <div class="form-group">
-                <label>Tên Playlist:</label>
-                <input type="text" id="modal-playlist-name" placeholder="Nhập tên playlist..." required>
-            </div>
-            
-            <div class="form-group">
-                <label>Chọn bài hát muốn thêm vào:</label>
-                <div id="modal-song-checkboxes" class="modal-song-list">
-                    <!-- Danh sách bài hát dạng checkbox sẽ được chèn qua JS -->
-                </div>
-            </div>
-
-            <div class="form-group form-inline">
-                <label for="modal-playlist-public">Chế độ công khai:</label>
-                <input type="checkbox" id="modal-playlist-public" checked>
-            </div>
-
-            <button type="submit" class="header__btn btn-full">Xác nhận Tạo</button>
-        </form>
-    </div>
-</div>
-
-                <h2 class="playlist__grid-title">Đề xuất</h2>
-                <div id="song-list-container"></div>
-            </section>
-        </div>
-    </main>
+<!-- Main Container loại bỏ phần Playlist để hiển thị riêng danh sách Bài hát Đề xuất -->
+<main class="main-container">
+  <div class="main-content">
+    <h1 style="font-size: 1.8rem; margin-bottom: 20px;">Đề xuất</h1>
+    <div id="song-list-container" style="display: flex; flex-direction: column; gap: 16px; width: 100%;"></div>
+  </div>
+</main>
 
     <!-- Footer -->
     <footer class="footer">
