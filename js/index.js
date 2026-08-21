@@ -205,6 +205,8 @@ function playSongInQueue(index) {
   currentSongIndex = index;
   const song = currentQueue[currentSongIndex];
 
+  document.body.classList.add('player-active');
+  
   if (playerImg) playerImg.src = song.cover_url || "img/song_cover_place_holder.jpg";
   if (playerTitle) playerTitle.innerText = song.title || "Bài hát không tên";
   if (playerArtist) playerArtist.innerText = song.artist || "Nghệ sĩ ẩn danh";
