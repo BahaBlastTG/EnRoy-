@@ -432,22 +432,29 @@ if (shuffleBtn) {
   });
 }
 
-// CHUYỂN ĐỔI CHẾ ĐỘ REPEAT (0: Tắt, 1: Lặp tất cả, 2: Lặp 1 bài)
+// CHUYỂN ĐỔI CHẾ ĐỘ REPEAT (0: Tắt, 1: Lặp danh sách, 2: Lặp 1 bài)
 if (repeatBtn) {
   repeatBtn.addEventListener('click', () => {
     repeatMode = (repeatMode + 1) % 3;
+    
     if (repeatMode === 0) {
+      // 0: Tắt lặp
       repeatBtn.style.color = '#fff';
-      repeatBtn.style.opacity = '0.7';
+      repeatBtn.style.opacity = '0.5';
+      repeatBtn.title = "Tắt lặp lại";
       repeatBtn.innerHTML = '<i class="fa-solid fa-repeat"></i>';
     } else if (repeatMode === 1) {
+      // 1: Lặp toàn bộ danh sách (Sáng màu đỏ)
       repeatBtn.style.color = '#ff0055';
       repeatBtn.style.opacity = '1';
+      repeatBtn.title = "Lặp lại danh sách";
       repeatBtn.innerHTML = '<i class="fa-solid fa-repeat"></i>';
     } else if (repeatMode === 2) {
+      // 2: Lặp 1 bài (Dùng icon fa-arrows-rotate hoặc thêm chấm đỏ)
       repeatBtn.style.color = '#ff0055';
       repeatBtn.style.opacity = '1';
-      repeatBtn.innerHTML = '<i class="fa-solid fa-repeat-1"></i>';
+      repeatBtn.title = "Lặp lại 1 bài";
+      repeatBtn.innerHTML = '<i class="fa-solid fa-rotate-right"></i>'; 
     }
   });
 }
