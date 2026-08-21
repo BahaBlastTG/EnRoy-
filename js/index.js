@@ -372,28 +372,30 @@ document.addEventListener('click', async (e) => {
     return;
   }
 
-  // E. BẤM BÀI HÁT ĐỂ PHÁT NHẠC
-  const songItem = e.target.closest('.song__item');
-  if (songItem && !e.target.closest('button')) {
-    const songId = songItem.getAttribute('data-id');
-    const source = songItem.getAttribute('data-source');
+// E. BẤM BÀI HÁT ĐỂ PHÁT NHẠC
+const songItem = e.target.closest('.song__item');
+if (songItem && !e.target.closest('button')) {
+  const songId = songItem.getAttribute('data-id');
+  const source = songItem.getAttribute('data-source');
 
-    if (source && source.startsWith('playlist-')) {
-      const playlistCard = songItem.closest('.playlist-card-item');
-      const songElements = playlistCard.querySelectorAll('.song__item');
-      currentQueue = [];
-      songElements.forEach(elem => {
-        const id = elem.getAttribute('data-id');
-        const songObj = allSongs.find(s => String(s.id) === String(id));
-        if (songObj) currentQueue.push(songObj);
-      });
-    } else {
-      currentQueue = [...allSongs];
-    }
-
-    const clickedIndex = currentQueue.findIndex(s => String(s.id) === String(songId));
-    if (clickedIndex !== -1) playSongInQueue(clickedIndex);
+  // Kiểm tra xem bài hát được bấm từ playlist hay danh sách chính
+  if (source && source.startsWith('playlist-')) {
+    const playlistCard = songItem.closest('.playlist-card-item');
+    const songElements = playlistCard.querySelectorAll('.song__item');
+    currentQueue = [];
+    songElements.forEach(elem => {
+      const id = elem.getAttribute('data-id');
+      const songObj = allSongs.find(s => String(s.id) === String(id));
+      if (songObj) currentQueue.push(songObj);
+    });
+  } else {
+    currentQueue = [...allSongs];
   }
+
+  // Tìm vị trí bài hát và phát nhạc
+  const clickedIndex = currentQueue.findIndex(s => String(s.id) === String(id));
+  if (clickedIndex !== -1) playSongInQueue(clickedIndex);
+}
 
   // F. TOGGLE ĐỔ MỞ PLAYLIST
   const playlistHeader = e.target.closest('.playlist-card-header');
