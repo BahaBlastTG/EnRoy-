@@ -40,6 +40,61 @@ body, p, h1, h2, h3, a, span, li, button, input, textarea, select {
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* --- 1. CĂN GIỮA NAV HEADER --- */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    padding: 16px 40px;
+}
+
+.header__nav {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.header__nav-list {
+    display: flex;
+    gap: 24px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+/* --- 2. ẨN/HIỆN PLAYER SIDEBAR & CĂN GIỮA MẶC ĐỊNH --- */
+/* Mặc định ẩn Player Sidebar */
+.player-sidebar {
+    display: none;
+}
+
+/* Mặc định căn giữa Main Container khi chưa mở Player */
+.main-container {
+    max-width: 900px;
+    margin: 40px auto;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+/* KHI PHÁT NHẠC: Bật class này vào <body> để hiện Player & đổi Layout */
+body.player-active .player-sidebar {
+    display: block;
+}
+
+body.player-active {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    max-width: 1200px;
+    margin: 40px auto;
+}
+
+body.player-active .main-container {
+    max-width: 700px;
+    margin: 0;
+}
+
 /* Class ẩn Header khi lướt xuống */
 .header.hidden {
     transform: translateY(-100%);
