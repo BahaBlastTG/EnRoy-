@@ -411,3 +411,17 @@ body.player-active .main-container,
     border-radius: 18px !important;
     padding: 12px 20px !important;
 }
+
+/* Sửa vị trí Player để không bị dính chèn vào khung đỏ */
+.player, 
+#music-player,
+.now-playing {
+    width: 100%;
+    max-width: 860px;
+    margin: 0 auto 20px auto; /* Tạo khoảng cách 20px với khung đỏ phía dưới */
+    padding: 16px 24px;
+    background: rgba(26, 6, 8, 0.9);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
