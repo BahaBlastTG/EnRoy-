@@ -2,19 +2,20 @@
 
 const API_BASE_URL = 'https://enroy.onrender.com';
 const globalAudio = new Audio();
-const playerImg = document.getElementById('player-img');
-const playerTitle = document.getElementById('player-title');
-const playerArtist = document.getElementById('player-artist');
-const playerUploader = document.getElementById('player-uploader');
-const playMainBtn = document.getElementById('player-play-btn');
-const playerSeek = document.getElementById('player-seek');
-const playerCurrentTime = document.getElementById('player-current-time');
-const playerDuration = document.getElementById('player-duration');
+// Player DOM refs (use let so we can re-query/create them on pages without player markup)
+let playerImg = document.getElementById('player-img');
+let playerTitle = document.getElementById('player-title');
+let playerArtist = document.getElementById('player-artist');
+let playerUploader = document.getElementById('player-uploader');
+let playMainBtn = document.getElementById('player-play-btn');
+let playerSeek = document.getElementById('player-seek');
+let playerCurrentTime = document.getElementById('player-current-time');
+let playerDuration = document.getElementById('player-duration');
 
-const nextBtn = document.getElementById('player-next-btn');
-const prevBtn = document.getElementById('player-prev-btn');
-const repeatBtn = document.getElementById('player-repeat-btn');
-const shuffleBtn = document.getElementById('player-shuffle-btn');
+let nextBtn = document.getElementById('player-next-btn');
+let prevBtn = document.getElementById('player-prev-btn');
+let repeatBtn = document.getElementById('player-repeat-btn');
+let shuffleBtn = document.getElementById('player-shuffle-btn');
 
 let allSongs = [];
 let currentQueue = [];
@@ -33,6 +34,119 @@ function formatTime(seconds) {
   const mins = Math.floor(seconds / 60);
   const secs = Math.floor(seconds % 60);
   return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+}
+
+// Ensure player exists on pages that don't include the markup (e.g., playlists.html)
+let _playerListenersBound = false;
+function ensurePlayerExists() {
+  // If a wrapper exists we assume full player exists
+  if (!document.getElementById('player-wrapper')) {
+    const wrapper = document.createElement('div');
+    wrapper.id = 'player-wrapper';
+    wrapper.style.zIndex = '9999';
+    // Minimal player markup - you can replace with your full player HTML/CSS
+    wrapper.innerHTML = `
+      <div id="player" class="player" style="position:fixed;left:0;right:0;bottom:0;display:flex;align-items:center;gap:12px;padding:8px 16px;background:rgba(0,0,0,0.6);">
+        <img id="player-img" src="img/song_cover_place_holder.jpg" alt="cover" style="width:56px;height:56px;object-fit:cover;border-radius:6px;" />
+        <div style="flex:1;min-width:0;">
+          <div id="player-title" style="font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Bài hát</div>
+          <div id="player-artist" style="font-size:0.9rem;color:#ddd;">Nghệ sĩ</div>
+          <div id="player-uploader" style="font-size:0.75rem;color:#bbb;">Đăng bởi</div>
+          <input id="player-seek" type="range" min="0" value="0" style="width:100%;margin-top:6px;" />
+          <div style="font-size:0.8rem;color:#ccc;margin-top:4px;"><span id="player-current-time">0:00</span> / <span id="player-duration">0:00</span></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;align-items:center;">
+          <div style="display:flex;gap:8px;align-items:center;">
+            <button id="player-prev-btn" title="Prev" style="background:none;border:none;color:#fff;cursor:pointer">⏮</button>
+            <button id="player-play-btn" title="Play" style="background:none;border:none;color:#fff;cursor:pointer;font-size:18px">▶️</button>
+            <button id="player-next-btn" title="Next" style="background:none;border:none;color:#fff;cursor:pointer">⏭</button>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <button id="player-repeat-btn" title="Repeat" style="background:none;border:none;color:#fff;cursor:pointer">🔁</button>
+            <button id="player-shuffle-btn" title="Shuffle" style="background:none;border:none;color:#fff;cursor:pointer">🔀</button>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(wrapper);
+  }
+
+  // Re-query DOM refs
+  playerImg = document.getElementById('player-img');
+  playerTitle = document.getElementById('player-title');
+  playerArtist = document.getElementById('player-artist');
+  playerUploader = document.getElementById('player-uploader');
+  playMainBtn = document.getElementById('player-play-btn');
+  playerSeek = document.getElementById('player-seek');
+  playerCurrentTime = document.getElementById('player-current-time');
+  playerDuration = document.getElementById('player-duration');
+
+  nextBtn = document.getElementById('player-next-btn');
+  prevBtn = document.getElementById('player-prev-btn');
+  repeatBtn = document.getElementById('player-repeat-btn');
+  shuffleBtn = document.getElementById('player-shuffle-btn');
+
+  bindPlayerListeners();
+}
+
+function bindPlayerListeners() {
+  if (_playerListenersBound) return;
+  _playerListenersBound = true;
+
+  // Seek
+  if (playerSeek) {
+    playerSeek.addEventListener('input', () => {
+      globalAudio.currentTime = playerSeek.value;
+    });
+  }
+
+  // Shuffle
+  if (shuffleBtn) {
+    shuffleBtn.addEventListener('click', () => {
+      isShuffle = !isShuffle;
+      shuffleBtn.style.color = isShuffle ? '#ff0055' : '#fff';
+      shuffleBtn.style.opacity = isShuffle ? '1' : '0.7';
+    });
+  }
+
+  // Repeat
+  if (repeatBtn) {
+    repeatBtn.addEventListener('click', () => {
+      repeatMode = (repeatMode + 1) % 3;
+      if (repeatMode === 0) {
+        repeatBtn.style.color = '#fff';
+        repeatBtn.style.opacity = '0.5';
+        repeatBtn.title = "Tắt lặp lại";
+        repeatBtn.innerHTML = '🔁';
+      } else if (repeatMode === 1) {
+        repeatBtn.style.color = '#ff0055';
+        repeatBtn.style.opacity = '1';
+        repeatBtn.title = "Lặp lại danh sách";
+        repeatBtn.innerHTML = '🔁';
+      } else if (repeatMode === 2) {
+        repeatBtn.style.color = '#ff0055';
+        repeatBtn.style.opacity = '1';
+        repeatBtn.title = "Lặp lại 1 bài";
+        repeatBtn.innerHTML = '🔂';
+      }
+    });
+  }
+
+  if (nextBtn) nextBtn.addEventListener('click', nextSong);
+  if (prevBtn) prevBtn.addEventListener('click', prevSong);
+
+  if (playMainBtn) {
+    playMainBtn.addEventListener('click', () => {
+      if (!globalAudio.src) return;
+      if (globalAudio.paused) {
+        globalAudio.play();
+        if (playMainBtn) playMainBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+      } else {
+        globalAudio.pause();
+        if (playMainBtn) playMainBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
+      }
+    });
+  }
 }
 
 // 1. HEADER AUTHENTICATION
@@ -204,6 +318,9 @@ function playSongInQueue(index) {
 
   currentSongIndex = index;
   const song = currentQueue[currentSongIndex];
+
+  // Ensure player exists on pages (create it if missing) and bind listeners
+  ensurePlayerExists();
 
   // Kích hoạt giao diện hiển thị Player
   document.body.classList.add('player-active');
@@ -422,63 +539,8 @@ globalAudio.addEventListener('timeupdate', () => {
   }
 });
 
-if (playerSeek) {
-  playerSeek.addEventListener('input', () => {
-    globalAudio.currentTime = playerSeek.value;
-  });
-}
-
-// BẬT / TẮT SHUFFLE
-if (shuffleBtn) {
-  shuffleBtn.addEventListener('click', () => {
-    isShuffle = !isShuffle;
-    shuffleBtn.style.color = isShuffle ? '#ff0055' : '#fff';
-    shuffleBtn.style.opacity = isShuffle ? '1' : '0.7';
-  });
-}
-
-// CHUYỂN ĐỔI CHẾ ĐỘ REPEAT (0: Tắt, 1: Lặp danh sách, 2: Lặp 1 bài)
-if (repeatBtn) {
-  repeatBtn.addEventListener('click', () => {
-    repeatMode = (repeatMode + 1) % 3;
-    
-    if (repeatMode === 0) {
-      // 0: Tắt lặp
-      repeatBtn.style.color = '#fff';
-      repeatBtn.style.opacity = '0.5';
-      repeatBtn.title = "Tắt lặp lại";
-      repeatBtn.innerHTML = '<i class="fa-solid fa-repeat"></i>';
-    } else if (repeatMode === 1) {
-      // 1: Lặp toàn bộ danh sách (Sáng màu đỏ)
-      repeatBtn.style.color = '#ff0055';
-      repeatBtn.style.opacity = '1';
-      repeatBtn.title = "Lặp lại danh sách";
-      repeatBtn.innerHTML = '<i class="fa-solid fa-repeat"></i>';
-    } else if (repeatMode === 2) {
-      // 2: Lặp 1 bài (Dùng icon fa-arrows-rotate hoặc thêm chấm đỏ)
-      repeatBtn.style.color = '#ff0055';
-      repeatBtn.style.opacity = '1';
-      repeatBtn.title = "Lặp lại 1 bài";
-      repeatBtn.innerHTML = '<i class="fa-solid fa-rotate-right"></i>'; 
-    }
-  });
-}
-
+// Keep globalAudio "ended" handling as-is
 globalAudio.addEventListener('ended', nextSong);
-if (nextBtn) nextBtn.addEventListener('click', nextSong);
-if (prevBtn) prevBtn.addEventListener('click', prevSong);
-if (playMainBtn) {
-  playMainBtn.addEventListener('click', () => {
-    if (!globalAudio.src) return;
-    if (globalAudio.paused) {
-      globalAudio.play();
-      playMainBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
-    } else {
-      globalAudio.pause();
-      playMainBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
-    }
-  });
-}
 
 // MODAL TẠO PLAYLIST
 const playlistModal = document.getElementById('playlist-modal');
