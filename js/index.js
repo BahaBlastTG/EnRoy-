@@ -1,4 +1,7 @@
 // js/index.js
+// Xóa player ngang bị đè nếu tồn tại
+const oldWrapper = document.getElementById('player-wrapper');
+if (oldWrapper) oldWrapper.remove();
 
 const API_BASE_URL = 'https://enroy.onrender.com';
 const globalAudio = new Audio();
@@ -39,39 +42,7 @@ function formatTime(seconds) {
 // Ensure player exists on pages that don't include the markup (e.g., playlists.html)
 let _playerListenersBound = false;
 function ensurePlayerExists() {
-  // If a wrapper exists we assume full player exists
-  if (!document.getElementById('player-wrapper')) {
-    const wrapper = document.createElement('div');
-    wrapper.id = 'player-wrapper';
-    wrapper.style.zIndex = '9999';
-    // Minimal player markup - you can replace with your full player HTML/CSS
-    wrapper.innerHTML = `
-      <div id="player" class="player" style="position:fixed;left:0;right:0;bottom:0;display:flex;align-items:center;gap:12px;padding:8px 16px;background:rgba(0,0,0,0.6);">
-        <img id="player-img" src="img/song_cover_place_holder.jpg" alt="cover" style="width:56px;height:56px;object-fit:cover;border-radius:6px;" />
-        <div style="flex:1;min-width:0;">
-          <div id="player-title" style="font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Bài hát</div>
-          <div id="player-artist" style="font-size:0.9rem;color:#ddd;">Nghệ sĩ</div>
-          <div id="player-uploader" style="font-size:0.75rem;color:#bbb;">Đăng bởi</div>
-          <input id="player-seek" type="range" min="0" value="0" style="width:100%;margin-top:6px;" />
-          <div style="font-size:0.8rem;color:#ccc;margin-top:4px;"><span id="player-current-time">0:00</span> / <span id="player-duration">0:00</span></div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:6px;align-items:center;">
-          <div style="display:flex;gap:8px;align-items:center;">
-            <button id="player-prev-btn" title="Prev" style="background:none;border:none;color:#fff;cursor:pointer">⏮</button>
-            <button id="player-play-btn" title="Play" style="background:none;border:none;color:#fff;cursor:pointer;font-size:18px">▶️</button>
-            <button id="player-next-btn" title="Next" style="background:none;border:none;color:#fff;cursor:pointer">⏭</button>
-          </div>
-          <div style="display:flex;gap:8px;align-items:center;">
-            <button id="player-repeat-btn" title="Repeat" style="background:none;border:none;color:#fff;cursor:pointer">🔁</button>
-            <button id="player-shuffle-btn" title="Shuffle" style="background:none;border:none;color:#fff;cursor:pointer">🔀</button>
-          </div>
-        </div>
-      </div>
-    `;
-    document.body.appendChild(wrapper);
-  }
-
-  // Re-query DOM refs
+  // Re-query các DOM ref từ HTML có sẵn
   playerImg = document.getElementById('player-img');
   playerTitle = document.getElementById('player-title');
   playerArtist = document.getElementById('player-artist');
