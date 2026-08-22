@@ -234,6 +234,7 @@ main {
     gap: 16px;
     cursor: pointer;
     transition: all 0.2s ease;
+    margin-bottom: 10px;
 }
 
 .song__item:hover {
