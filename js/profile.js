@@ -15,13 +15,24 @@ const playerDuration = document.getElementById('player-duration');
 
 const nextBtn = document.getElementById('player-next-btn');
 const prevBtn = document.getElementById('player-prev-btn');
+const repeatBtn = document.getElementById('player-repeat-btn');
+const shuffleBtn = document.getElementById('player-shuffle-btn');
 
 let profileSongs = [];
 let profilePlaylists = [];
 let currentQueue = [];
 let currentSongIndex = -1;
+let isShuffle = false;
+let repeatMode = 0; // 0: Off, 1: Repeat All, 2: Repeat One
 
 const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+
+function formatTime(seconds) {
+  if (isNaN(seconds) || seconds < 0) return "0:00";
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+}
 
 // 1. KIỂM TRA ĐĂNG NHẬP VÀ HIỂN THỊ PROFILE
 function initProfile() {
@@ -178,6 +189,10 @@ function playSongInQueue(index) {
 
 function nextSong() {
   if (currentQueue.length === 0) return;
+  if (repeatMode === 2) {
+    playSongInQueue(currentSongIndex);
+    return;
+  }
   playSongInQueue((currentSongIndex + 1) % currentQueue.length);
 }
 
@@ -248,7 +263,58 @@ document.addEventListener('click', async (e) => {
   }
 });
 
-// SỰ KIỆN PHÁT NHẠC
+// 7. SỰ KIỆN PHÁT NHẠC & THANH SEEK
+globalAudio.addEventListener('loadedmetadata', () => {
+  if (playerDuration) playerDuration.innerText = formatTime(globalAudio.duration);
+  if (playerSeek) playerSeek.max = Math.floor(globalAudio.duration || 0);
+});
+
+globalAudio.addEventListener('timeupdate', () => {
+  if (playerCurrentTime) playerCurrentTime.innerText = formatTime(globalAudio.currentTime);
+  if (playerSeek && !isNaN(globalAudio.duration)) {
+    playerSeek.value = Math.floor(globalAudio.currentTime);
+  }
+});
+
+if (playerSeek) {
+  playerSeek.addEventListener('input', () => {
+    globalAudio.currentTime = playerSeek.value;
+  });
+}
+
+// BẬT / TẮT SHUFFLE
+if (shuffleBtn) {
+  shuffleBtn.addEventListener('click', () => {
+    isShuffle = !isShuffle;
+    shuffleBtn.style.color = isShuffle ? '#ff0055' : '#fff';
+    shuffleBtn.style.opacity = isShuffle ? '1' : '0.7';
+  });
+}
+
+// CHUYỂN ĐỔI CHẾ ĐỘ REPEAT
+if (repeatBtn) {
+  repeatBtn.addEventListener('click', () => {
+    repeatMode = (repeatMode + 1) % 3;
+    
+    if (repeatMode === 0) {
+      repeatBtn.style.color = '#fff';
+      repeatBtn.style.opacity = '0.5';
+      repeatBtn.title = "Tắt lặp lại";
+      repeatBtn.innerHTML = '<i class="fa-solid fa-repeat"></i>';
+    } else if (repeatMode === 1) {
+      repeatBtn.style.color = '#ff0055';
+      repeatBtn.style.opacity = '1';
+      repeatBtn.title = "Lặp lại danh sách";
+      repeatBtn.innerHTML = '<i class="fa-solid fa-repeat"></i>';
+    } else if (repeatMode === 2) {
+      repeatBtn.style.color = '#ff0055';
+      repeatBtn.style.opacity = '1';
+      repeatBtn.title = "Lặp lại 1 bài";
+      repeatBtn.innerHTML = '<i class="fa-solid fa-rotate-right"></i>'; 
+    }
+  });
+}
+
 globalAudio.addEventListener('ended', nextSong);
 if (nextBtn) nextBtn.addEventListener('click', nextSong);
 if (prevBtn) prevBtn.addEventListener('click', prevSong);
