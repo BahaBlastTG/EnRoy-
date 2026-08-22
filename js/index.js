@@ -205,14 +205,15 @@ function playSongInQueue(index) {
   currentSongIndex = index;
   const song = currentQueue[currentSongIndex];
 
+  // Kích hoạt giao diện hiển thị Player
   document.body.classList.add('player-active');
+  document.body.classList.add('has-player');
   
   if (playerImg) playerImg.src = song.cover_url || "img/song_cover_place_holder.jpg";
   if (playerTitle) playerTitle.innerText = song.title || "Bài hát không tên";
   if (playerArtist) playerArtist.innerText = song.artist || "Nghệ sĩ ẩn danh";
   if (playerUploader) playerUploader.innerText = `Đăng bởi: ${song.uploader || 'Admin'}`;
 
-  document.body.classList.add('has-player');
   globalAudio.src = song.audio_url;
   globalAudio.play();
 
@@ -393,7 +394,7 @@ if (songItem && !e.target.closest('button')) {
   }
 
   // Tìm vị trí bài hát và phát nhạc
-  const clickedIndex = currentQueue.findIndex(s => String(s.id) === String(id));
+  const clickedIndex = currentQueue.findIndex(s => String(s.id) === String(songId));
   if (clickedIndex !== -1) playSongInQueue(clickedIndex);
 }
 
@@ -556,4 +557,3 @@ if (createPlaylistForm) {
 // KHỞI CHẠY
 renderHeaderAuth();
 loadSongsFromBackend();
-
