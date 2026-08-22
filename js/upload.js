@@ -18,8 +18,12 @@ const titleInput = document.getElementById('song-title-input');
 const artistInput = document.getElementById('song-artist-input');
 const submitUpload = document.getElementById('submit-upload');
 
+// Đọc preview ảnh bìa
+const coverPreviewImg = document.getElementById('cover-preview-img');
+const placeholderIcon = document.querySelector('.placeholder-icon');
+
 function validateForm() {
-  const hasAudio = fileInput.files.length > 0;
+  const hasAudio = fileInput.files && fileInput.files.length > 0;
   const hasTitle = titleInput.value.trim() !== "";
   const hasArtist = artistInput.value.trim() !== "";
 
@@ -32,8 +36,17 @@ function validateForm() {
 
 if (fileInput) {
   fileInput.addEventListener('change', () => {
-    if (fileNameLabel) {
-      fileNameLabel.textContent = fileInput.files.length > 0 ? fileInput.files[0].name : "Chưa chọn tệp nhạc";
+    if (fileInput.files.length > 0) {
+      const file = fileInput.files[0];
+      if (fileNameLabel) fileNameLabel.textContent = file.name;
+
+      // Tự động điền tên bài hát từ tên file mp3 nếu khung title đang trống
+      if (titleInput && !titleInput.value.trim()) {
+        const fileNameWithoutExt = file.name.replace(/\.[^/.]+$/, "");
+        titleInput.value = fileNameWithoutExt;
+      }
+    } else {
+      if (fileNameLabel) fileNameLabel.textContent = "Chưa chọn tệp nhạc (.mp3, .wav, .m4a)";
     }
     validateForm();
   });
@@ -41,8 +54,24 @@ if (fileInput) {
 
 if (coverInput) {
   coverInput.addEventListener('change', () => {
-    if (coverNameLabel) {
-      coverNameLabel.textContent = coverInput.files.length > 0 ? coverInput.files[0].name : "Chưa chọn ảnh bìa";
+    if (coverInput.files.length > 0) {
+      const file = coverInput.files[0];
+      if (coverNameLabel) coverNameLabel.textContent = file.name;
+
+      // Hiển thị ảnh xem trước (Preview)
+      if (coverPreviewImg) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          coverPreviewImg.src = e.target.result;
+          coverPreviewImg.classList.remove('hidden');
+          if (placeholderIcon) placeholderIcon.style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+      }
+    } else {
+      if (coverNameLabel) coverNameLabel.textContent = "Chưa chọn ảnh bìa (.jpg, .png, .webp)";
+      if (coverPreviewImg) coverPreviewImg.classList.add('hidden');
+      if (placeholderIcon) placeholderIcon.style.display = 'block';
     }
   });
 }
@@ -50,7 +79,7 @@ if (coverInput) {
 if (titleInput) titleInput.addEventListener('input', validateForm);
 if (artistInput) artistInput.addEventListener('input', validateForm);
 
-// 2. Gửi dữ liệu bài hát lên Backend
+// 2. Gửi dữ liệu bài hát lên Backend Render
 const uploadForm = document.getElementById('upload-form');
 if (uploadForm) {
   uploadForm.addEventListener('submit', async (e) => {
@@ -62,7 +91,7 @@ if (uploadForm) {
     const artist = artistInput.value.trim();
 
     submitUpload.setAttribute('disabled', 'true');
-    submitUpload.innerHTML = 'Đang tải lên... <i class="ri-loader-4-line"></i>';
+    submitUpload.innerHTML = '<span>Đang tải lên...</span> <i class="ri-loader-4-line"></i>';
 
     const formData = new FormData();
     formData.append('audio', audioFile);
@@ -91,7 +120,7 @@ if (uploadForm) {
       console.error("Lỗi:", error);
       alert("Đã xảy ra lỗi: " + error.message);
       submitUpload.removeAttribute('disabled');
-      submitUpload.innerHTML = 'Tải nhạc lên <i class="ri-upload-2-line"></i>';
+      submitUpload.innerHTML = '<span>Tải nhạc lên</span> <i class="ri-upload-2-line"></i>';
     }
   });
 }
