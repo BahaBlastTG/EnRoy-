@@ -393,7 +393,6 @@ main {
 }
 
 /* Đảm bảo khung đỏ giữ nguyên kích thước kể cả khi JS thêm class has-player */
-body.has-player .main-container,
 body.player-active .main-container,
 .main-container,
 .main-content {
@@ -426,21 +425,58 @@ body.player-active .main-container,
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
-/* FIX PLAYER SIDEBAR: Cố định góc trái màn hình, không đè vỡ khung đỏ */
+/* --- REPLACED PLAYER SIDEBAR & HAS-PLAYER STYLES --- */
+/* --- TRẠNG THÁI MẶC ĐỊNH: ẨN PLAYER, CĂN GIỮA NỘI DUNG --- */
 .player-sidebar {
+    display: none; /* Mặc định ẩn hoàn toàn */
     position: fixed;
-    top: 100px;
-    left: 24px;
-    width: 280px;
+    top: 90px;
+    left: 4vw;
+    width: 32vw; /* Chiếm khoảng 3.2/10 màn hình bên trái */
+    max-width: 400px;
     z-index: 900;
     background: var(--panel);
     border: 1px solid var(--border);
     border-radius: 20px;
-    padding: 20px;
+    padding: 24px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
+/* Khung nội dung chính mặc định nằm chính giữa */
+.main-container {
+    width: 100%;
+    max-width: 860px;
+    margin: 0 auto;
+    transition: all 0.4s ease-in-out;
+}
+
+/* --- TRẠNG THÁI PHÁT NHẠC (KHÍ BẤM BÀI HÁT) --- */
+body.has-player .player-sidebar {
+    display: block; /* Hiện player */
+    animation: slideInLeft 0.3s ease forwards;
+}
+
+/* Dịch chuyển khung nội dung sang bên phải */
+body.has-player .main-container {
+    margin-left: 40vw !important; /* Dịch sang phải nhường 4/10 màn hình cho player */
+    margin-right: 4vw !important;
+    max-width: calc(56vw - 20px) !important;
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Hiệu chỉnh giao diện nút bấm trong Player */
 .player-card {
     display: flex;
     flex-direction: column;
@@ -453,20 +489,8 @@ body.player-active .main-container,
     width: 100%;
     aspect-ratio: 1/1;
     object-fit: cover;
-    border-radius: 12px;
+    border-radius: 14px;
     border: 1px solid var(--border);
-}
-
-.player-info h2 {
-    font-size: 1.1rem;
-    font-weight: 700;
-    margin-bottom: 4px;
-}
-
-.player-info p, 
-.player-info span {
-    font-size: 0.85rem;
-    color: var(--muted);
 }
 
 .player-progress {
@@ -474,7 +498,6 @@ body.player-active .main-container,
     align-items: center;
     gap: 8px;
     width: 100%;
-    margin-top: 8px;
 }
 
 .player-progress input[type="range"] {
@@ -487,39 +510,27 @@ body.player-active .main-container,
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 12px;
+    gap: 14px;
     width: 100%;
-    margin-top: 10px;
 }
 
 .btn-ctrl {
     background: transparent;
     border: none;
     color: var(--text);
-    font-size: 1rem;
+    font-size: 1.1rem;
     cursor: pointer;
-    transition: transform 0.2s, color 0.2s;
-}
-
-.btn-ctrl:hover {
-    color: var(--accent);
-    transform: scale(1.15);
 }
 
 .btn-ctrl.play-main {
-    width: 42px;
-    height: 42px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     background: var(--primary);
     color: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
-}
-
-/* Đẩy khung nội dung chính lệch sang phải một khoảng để không bị Player che mất */
-body.has-player .main-container {
-    margin-left: calc(50% - 430px) !important; /* Giữ khung đỏ nằm giữa cân đối */
 }
 
 /* Responsive: Ẩn sidebar trên màn hình nhỏ hoặc đưa xuống dưới */
