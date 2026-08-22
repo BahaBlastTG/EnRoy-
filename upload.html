@@ -13,13 +13,12 @@
         <div class="header__logo">
             <a href="index.html"><img src="img/logo.png" alt="Logo"></a>
         </div>
-        <!-- Nút quay về trang chủ -->
         <a href="index.html" class="btn btn--secondary header__back-btn">
             <i class="ri-arrow-left-line"></i> Quay về Trang chủ
         </a>
     </header>
 
-    <main class="upload-wrapper">
+    <main class="main-container">
         <div class="upload-card">
             <div class="upload-card__header">
                 <div class="upload-icon-badge">
@@ -36,7 +35,7 @@
                         <i class="ri-disc-line"></i> Tệp nhạc (Audio):
                     </label>
                     <input type="file" id="mp3-file" accept="audio/*" hidden>
-                    <div class="file-dropzone">
+                    <div class="file-dropzone" id="mp3-dropzone">
                         <label for="mp3-file" class="file-btn">
                             <i class="ri-upload-cloud-2-line"></i> Chọn tệp nhạc
                         </label>
@@ -50,11 +49,17 @@
                         <i class="ri-image-line"></i> Ảnh bìa bài hát (Cover Art):
                     </label>
                     <input type="file" id="cover-file" accept="image/*" hidden>
-                    <div class="file-dropzone">
-                        <label for="cover-file" class="file-btn file-btn--accent">
-                            <i class="ri-image-add-line"></i> Chọn ảnh bìa
-                        </label>
-                        <span id="cover-name" class="file-name">Chưa chọn ảnh bìa (.jpg, .png, .webp)</span>
+                    <div class="file-dropzone" id="cover-dropzone">
+                        <div class="cover-preview-wrapper" id="cover-preview-box">
+                            <i class="ri-image-add-line placeholder-icon"></i>
+                            <img id="cover-preview-img" src="" alt="Preview" class="cover-preview-img hidden">
+                        </div>
+                        <div class="cover-upload-info">
+                            <label for="cover-file" class="file-btn file-btn--accent">
+                                <i class="ri-image-add-line"></i> Chọn ảnh bìa
+                            </label>
+                            <span id="cover-name" class="file-name">Chưa chọn ảnh bìa (.jpg, .png, .webp)</span>
+                        </div>
                     </div>
                 </div>
 
@@ -67,21 +72,20 @@
                         <i class="ri-song-line input-icon"></i>
                         <input type="text" id="song-title-input" placeholder="Nhập tên bài hát...">
                     </div>
-                    <div class="input-field">
+                    <div class="input-field" style="margin-top: 10px;">
                         <i class="ri-user-3-line input-icon"></i>
                         <input type="text" id="song-artist-input" placeholder="Nhập tên nghệ sĩ...">
                     </div>
                 </div>
 
                 <!-- Nút gửi -->
-                <button type="submit" id="submit-upload" class="btn submit-btn" disabled>
+                <button type="submit" id="submit-upload" class="submit-btn btn-full" disabled>
                     <span>Tải nhạc lên</span> <i class="ri-upload-2-line"></i>
                 </button>
             </form>
         </div>
     </main>
 
-    <!-- JS riêng dành riêng cho xử lý upload -->
     <script type="module" src="js/upload.js"></script>
 </body>
 </html>
